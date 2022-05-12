@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">2FastThumbs</string>
+    <string name="enter_the_following_text">After clicking the button,\ntype the following texts as fast as you can.\nThen, hit the send button on the keyboard\nto generate the next line.</string>
+    <string name="text_to_be_typed_goes_here">Once you start,\ntext to be typed goes here.\nA box will appear below upon beginning for you to type into.\nYour stats will also appear to view while typing.</string>
+    <string name="send">Send</string>
+    <string name="wpm">WPM:</string>
+    <string name="accuracy">Accuracy:</string>
+    <string name="start">Start</string>
+    <string name="time_up">Time\'s up!</string>
+    <string name="test_end">The test is over.\nView your results below!\nPress the start button to retry!</string>
+    <string name="please_type_the_prompt_given">Please type the prompt given.</string>
 </resources>
