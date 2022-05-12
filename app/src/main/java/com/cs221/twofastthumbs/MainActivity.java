@@ -22,6 +22,9 @@ import java.util.List;
 
 import java.lang.Math;
 
+import dagger.hilt.android.AndroidEntryPoint;
+
+@AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
 
     TextView time;              // shows time at top of screen during test
