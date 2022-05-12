@@ -2,6 +2,7 @@ package com.cs221.twofastthumbs;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -12,6 +13,9 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,10 +30,9 @@ public class MainActivity extends AppCompatActivity {
     TextView warning;           // text that shows when user does not type before sending
     EditText input;             // the text box that the user will write into
     Button start;               // start button
-
     TextView WPM;               // WPM counter
     TextView accuracy;          // accuracy counter
-
+    Button btnSignOut;          // sign out button
     public static String[] text = { "This is an example sentence.",
                                     "Let's hope that this code works properly.",
                                     "If not, I don't know what I'll do!",
@@ -56,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         warning = (TextView) findViewById(R.id.warning);
         input = (EditText) findViewById(R.id.input);
         start = (Button) findViewById(R.id.start);
-
+        btnSignOut = (Button) findViewById(R.id.btn_sign_out);
         WPM = (TextView) findViewById(R.id.WPM);
         accuracy = (TextView) findViewById(R.id.accuracy);
 
@@ -66,6 +69,9 @@ public class MainActivity extends AppCompatActivity {
         WPM.setVisibility(View.GONE);               // hide WPM at startup
         accuracy.setVisibility(View.GONE);          // hide accuracy at startup
 
+        btnSignOut.setOnClickListener(v -> {
+            signOut();
+        });
 
         timer = new CountDownTimer(minutes * 60 * 1000, 1000) {
             @Override
@@ -93,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
                 timer.start();                                 // start timer
                 start.setVisibility(View.INVISIBLE);           // hide start button
                 instructions.setVisibility(View.GONE);         // hide instructions
+                btnSignOut.setVisibility(View.INVISIBLE);      // hide sign out button
                 input.setVisibility(View.VISIBLE);             // show input box
                 WPM.setVisibility(View.VISIBLE);               // show WPM
                 accuracy.setVisibility(View.VISIBLE);          // show accuracy
@@ -209,4 +216,11 @@ public class MainActivity extends AppCompatActivity {
 
     public static long calculate_wpm(long time, int number_of_words){ return number_of_words / time; }
 
+    private void signOut() {
+        ParseUser.logOutInBackground(e -> {
+            Toast.makeText(this, "Logged Out", Toast.LENGTH_SHORT).show();
+            Intent i = new Intent(getApplicationContext(),LoginActivity.class);
+            startActivity(i);
+        });
+    }
 }
