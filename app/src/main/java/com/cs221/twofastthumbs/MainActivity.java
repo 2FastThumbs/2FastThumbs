@@ -96,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
                 prompt.setVisibility(View.INVISIBLE);         // hide prompt
                 input.setVisibility(View.GONE);               // hide input box
                 warning.setVisibility(View.GONE);             // hide warning
+                btnSignOut.setVisibility(View.VISIBLE);       // shows sign out button
             }
         };
 
@@ -119,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
                 prompt.setText(text[index]);                   // show current prompt
                 WPM.setText(R.string.wpm);                     // reset WPM
                 accuracy.setText(R.string.accuracy);           // reset accuracy
+                timeStart = System.currentTimeMillis();        // time in ms test was started
             }
         });
 
@@ -235,21 +237,13 @@ public class MainActivity extends AppCompatActivity {
      * Calculate the user's WPM, or words per minute.
      *
      * @param time: the time spent in the typing text
-     * @param number_of_words: number of words the user typed (aka user_input.length)
-     * @return The user's WPM. Let WPM = the number of words typed / time spent typing
-     */
-
-    /**
-     * Calculate the user's WPM, or words per minute.
-     *
-     * @param time: the time spent in the typing text
      * @param number_of_chars: number of characters of each input
      * @return The user's WPM. Let WPM = the number of words typed / time spent typing
      */
 
-    public static long calculate_wpm(long time, int number_of_chars) {
-        long cpm = number_of_chars / (time);
-        return (cpm / 5) / 60;
+    public static long calculate_wpm(double time, int number_of_chars) {
+        double cpm = number_of_chars / (time / 60);
+        return  Math.round(cpm / 5);
     }
 
 
