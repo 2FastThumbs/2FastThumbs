@@ -43,10 +43,13 @@ public class MainActivity extends AppCompatActivity {
 
     List<String> answers;   // list of user's inputs
     List<String> split_answers; // list of user's inputs split into individual words
+    List<Character> split_chars; // List of user's input split by character
     // index is used for traversal of text lines and keeping track of position in list,
     // sentencesCleared is used for calculating WPM and accuracy if user clears a loop
     int index, sentencesCleared;
-    long minutes = 2;   // time is hardcoded at the moment, sorry
+    long minutes = 1;   // time is hardcoded at the moment, sorry
+    long timeStart;  // Time code was started in milliseconds
+    long timeLapsed;  // Time between each submit
 
     CountDownTimer timer;
     Boolean timer_isRunning = false;
@@ -108,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
                 accuracy.setVisibility(View.VISIBLE);          // show accuracy
                 answers = new ArrayList<String>();             // reset lists
                 split_answers = new ArrayList<String>();
+                split_chars = new ArrayList<>();
                 index = 0;
                 sentencesCleared = 0;
                 prompt.setVisibility(View.VISIBLE);            // make prompt visible
@@ -125,12 +129,14 @@ public class MainActivity extends AppCompatActivity {
                     if (actionId == EditorInfo.IME_ACTION_SEND && timer_isRunning && input.getText().length() > 0) {
                         answers.add(index, input.getText().toString());
                         split_answers.addAll(prepare_text(input.getText().toString()));
+                        split_chars.addAll(break_text(input.getText().toString()));
                         index++;
                         sentencesCleared++;
                         input.getText().clear();    // clear the input box
                         prompt.setText(text[index % text.length]); // set new prompt
                         warning.setVisibility(View.GONE);
-                        WPM.setText("WPM: " + calculate_wpm(minutes, split_answers.size()));
+                        timeLapsed = (System.currentTimeMillis() - timeStart) / 1000;
+                        WPM.setText("WPM: " + calculate_wpm(timeLapsed, split_chars.size()));
                         accuracy.setText("Accuracy: " + calculate_accuracy(sentencesCleared, text, answers) + "%");
                         return true;
                     }
@@ -140,6 +146,22 @@ public class MainActivity extends AppCompatActivity {
                 }
         });
 
+    }
+
+    /**
+     * Split the text into individual character to check right away if the user misspelled
+     * something or entered something unexpected. Used to calculate WPM
+     *
+     * @param text : text that the user will type.
+     * @return A char array that contains every character of the text in order.
+     */
+
+    public List<Character> break_text(String text){
+        List<Character> charList = new ArrayList<>();
+        for (char ch : text.toCharArray()) {
+            charList.add(ch);
+        }
+        return charList;
     }
 
     /**
@@ -217,7 +239,19 @@ public class MainActivity extends AppCompatActivity {
      * @return The user's WPM. Let WPM = the number of words typed / time spent typing
      */
 
-    public static long calculate_wpm(long time, int number_of_words){ return number_of_words / time; }
+    /**
+     * Calculate the user's WPM, or words per minute.
+     *
+     * @param time: the time spent in the typing text
+     * @param number_of_chars: number of characters of each input
+     * @return The user's WPM. Let WPM = the number of words typed / time spent typing
+     */
+
+    public static long calculate_wpm(long time, int number_of_chars) {
+        long cpm = number_of_chars / (time);
+        return (cpm / 5) / 60;
+    }
+
 
     private void signOut() {
         ParseUser.logOutInBackground(e -> {
