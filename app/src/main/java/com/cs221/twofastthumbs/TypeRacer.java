@@ -6,7 +6,7 @@ import java.util.List;
 public class TypeRacer {
     /**
      * Split the text into individual character to check right away if the user misspelled
-     * something or entered something unexpected. Used to calculate WPM
+     * something or entered something unexpected. Used to calculate WPM and accuracy.
      *
      * @param text : text that the user will type.
      * @return A char array that contains every character of the text in order.
@@ -52,39 +52,10 @@ public class TypeRacer {
     /**
      * Calculate the user's accuracy based on the correctness of the words they typed.
      *
-     * @param sentencesCleared: the number of sentences the user cleared during the test
-     * @param original_text: the original text exactly how it was written
-     * @param answers: the list of words that the user typed
-     * @return The accuracy of the user's typing. Assume for the time being we
-     * consider accuracy = (# correct / total # of words written) * 100
      */
 
-    public static double calculate_accuracy
-    (int sentencesCleared, String[] original_text, List<String> answers){
-        List<String> expectedWords;
-        List<String> actualWords;
-        int total = 0;
-        int mistakes = 0;
-        for(int i = 0; i < sentencesCleared; i++){
-            expectedWords = prepare_text(original_text[i % original_text.length]);
-            total += expectedWords.size();
-            actualWords = prepare_text(answers.get(i));
-            int j = 0;
-            while(j < expectedWords.size() && j < actualWords.size()){
-                if(!expectedWords.get(j).equals(actualWords.get(j)))
-                    mistakes++;
-                j++;
-            }
-            // This line *should* have the effect of adding a mistake for every single
-            // missing word or extraneous word, and doing nothing if the number of words match
-            mistakes += Math.max(expectedWords.size(), actualWords.size()) - j;
-        }
-        // this case may happen if the user inputs too many words or too little words
-        if (mistakes > total)
-            return 0;
-        else{
-            return Math.round(100 * ((total - mistakes) / (double) total));
-        }
+    public static double calculate_accuracy (int totalCharacters, double mistakes) {
+        return Math.round(100 * (totalCharacters - mistakes) / totalCharacters);
     }
 
     /**

@@ -8,9 +8,11 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 
+import android.text.Editable;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.text.TextWatcher;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -46,13 +48,15 @@ public class MainActivity extends AppCompatActivity {
     List<String> split_answers; // list of user's inputs split into individual words
     List<Character> split_chars; // List of user's input split by character
     // index is used for traversal of text lines and keeping track of position in list,
-    // sentencesCleared is used for calculating WPM and accuracy if user clears a loop
-    int index, sentencesCleared;
+    int index;
     long minutes = 1;   // time is hardcoded at the moment, sorry
     long timeStart = 0;  // Time code was started in milliseconds
     long timeLapsed = 0;  // Time between each submit
     public static long wordsPerMinute;
     public static double acc;
+
+    double mistakes;
+    boolean hasMistakes = false;
 
     CountDownTimer timer;
     Boolean timer_isRunning = false;
@@ -110,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
                 split_answers = new ArrayList<String>();
                 split_chars = new ArrayList<>();
                 index = 0;
-                sentencesCleared = 0;
+                mistakes = 0;
                 prompt.setVisibility(View.VISIBLE);            // make prompt visible
                 prompt.setTypeface(null, Typeface.BOLD);    // make prompt bold
                 prompt.setText(text[index]);                   // show current prompt
@@ -120,28 +124,65 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        input.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                String actual = charSequence.toString();
+                String expected;
+                if(actual.length() > text[index % text.length].length()) {
+                    expected = text[index % text.length];
+                }
+                else{
+                    expected = text[index % text.length].substring(0, actual.length());
+                }
+                if(!expected.equals(actual)){
+                    warning.setVisibility(View.VISIBLE);
+                    warning.setText("Expected input:\n" + expected);
+                    if(!hasMistakes){
+                        hasMistakes = true;
+                        mistakes++;
+                    }
+                }
+                else{
+                    warning.setVisibility(View.GONE);
+                    hasMistakes = false;
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
         input.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                     // pressing the send button on the keyboard only while timer is running
-                    if (actionId == EditorInfo.IME_ACTION_SEND && timer_isRunning && input.getText().length() > 0) {
+                    if (actionId == EditorInfo.IME_ACTION_SEND && timer_isRunning &&
+                    input.getText().length() == text[index % text.length].length() && input.getText().length() > 0 && !hasMistakes) {
                         answers.add(index, input.getText().toString());
                         split_answers.addAll(TypeRacer.prepare_text(input.getText().toString()));
                         split_chars.addAll(TypeRacer.break_text(input.getText().toString()));
                         index++;
-                        sentencesCleared++;
                         input.getText().clear();    // clear the input box
                         prompt.setText(text[index % text.length]); // set new prompt
                         warning.setVisibility(View.GONE);
                         timeLapsed = (System.currentTimeMillis() - timeStart) / 1000;
                         wordsPerMinute = TypeRacer.calculate_wpm(timeLapsed, split_chars.size());
-                        acc = TypeRacer.calculate_accuracy(sentencesCleared, text, answers);
+                        acc = TypeRacer.calculate_accuracy(split_chars.size(), mistakes);
                         WPM.setText("WPM: " + wordsPerMinute);
                         accuracy.setText("Accuracy: " + acc + "%");
                         return true;
                     }
-                    if(input.getText().length() == 0)
+                    if(input.getText().length() != text[index % text.length].length()) {
                         warning.setVisibility(View.VISIBLE);
+                        warning.setText(R.string.please_type_the_prompt_given);
+                    }
                     return false;
                 }
         });
