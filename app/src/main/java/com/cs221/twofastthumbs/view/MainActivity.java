@@ -1,4 +1,5 @@
-package com.cs221.twofastthumbs;
+package com.cs221.twofastthumbs.view;
+
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -15,12 +16,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.cs221.twofastthumbs.R;
+import com.cs221.twofastthumbs.TypeRacer;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import java.lang.Math;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -48,8 +49,10 @@ public class MainActivity extends AppCompatActivity {
     // sentencesCleared is used for calculating WPM and accuracy if user clears a loop
     int index, sentencesCleared;
     long minutes = 1;   // time is hardcoded at the moment, sorry
-    long timeStart;  // Time code was started in milliseconds
-    long timeLapsed;  // Time between each submit
+    long timeStart = 0;  // Time code was started in milliseconds
+    long timeLapsed = 0;  // Time between each submit
+    public static long wordsPerMinute;
+    public static double acc;
 
     CountDownTimer timer;
     Boolean timer_isRunning = false;
@@ -89,14 +92,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFinish() {
                 timer_isRunning = false;                       // stop timer
-                time.setText(R.string.time_up);
-                instructions.setVisibility(View.VISIBLE);     // show instructions
-                instructions.setText(R.string.test_end);
-                start.setVisibility(View.VISIBLE);            // show start button
-                prompt.setVisibility(View.INVISIBLE);         // hide prompt
-                input.setVisibility(View.GONE);               // hide input box
-                warning.setVisibility(View.GONE);             // hide warning
-                btnSignOut.setVisibility(View.VISIBLE);       // shows sign out button
+                goResultScreen();                              // result screen
             }
         };
 
@@ -130,16 +126,18 @@ public class MainActivity extends AppCompatActivity {
                     // pressing the send button on the keyboard only while timer is running
                     if (actionId == EditorInfo.IME_ACTION_SEND && timer_isRunning && input.getText().length() > 0) {
                         answers.add(index, input.getText().toString());
-                        split_answers.addAll(prepare_text(input.getText().toString()));
-                        split_chars.addAll(break_text(input.getText().toString()));
+                        split_answers.addAll(TypeRacer.prepare_text(input.getText().toString()));
+                        split_chars.addAll(TypeRacer.break_text(input.getText().toString()));
                         index++;
                         sentencesCleared++;
                         input.getText().clear();    // clear the input box
                         prompt.setText(text[index % text.length]); // set new prompt
                         warning.setVisibility(View.GONE);
                         timeLapsed = (System.currentTimeMillis() - timeStart) / 1000;
-                        WPM.setText("WPM: " + calculate_wpm(timeLapsed, split_chars.size()));
-                        accuracy.setText("Accuracy: " + calculate_accuracy(sentencesCleared, text, answers) + "%");
+                        wordsPerMinute = TypeRacer.calculate_wpm(timeLapsed, split_chars.size());
+                        acc = TypeRacer.calculate_accuracy(sentencesCleared, text, answers);
+                        WPM.setText("WPM: " + wordsPerMinute);
+                        accuracy.setText("Accuracy: " + acc + "%");
                         return true;
                     }
                     if(input.getText().length() == 0)
@@ -150,108 +148,17 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    /**
-     * Split the text into individual character to check right away if the user misspelled
-     * something or entered something unexpected. Used to calculate WPM
-     *
-     * @param text : text that the user will type.
-     * @return A char array that contains every character of the text in order.
-     */
-
-    public List<Character> break_text(String text){
-        List<Character> charList = new ArrayList<>();
-        for (char ch : text.toCharArray()) {
-            charList.add(ch);
-        }
-        return charList;
-    }
-
-    /**
-     * Split sentences into words so that we can easily compare expected word with the
-     * given word in order to calculate accuracy.
-     *
-     * @param text: text that the user will type.
-     * @return A list that contains every word in the text parameter as individual strings.
-     */
-
-    public static List<String> prepare_text(String text){
-        List<String> words = new ArrayList<String>();
-        List<Integer> breaks = new ArrayList<Integer>();    // indices where character is a space
-         for(int i = 0; i < text.length(); i++){
-            if(text.charAt(i) == ' ')
-                breaks.add(i);
-         }
-         int startingIndex = 0;
-         // break the sentence into individual words
-         // also checks for blank space strings that may tamper results
-         for(int i: breaks){
-             String currentWord = text.substring(startingIndex, i);
-             if(currentWord.length() > 0) {
-                 words.add(text.substring(startingIndex, i));
-             }
-             startingIndex = i + 1;
-         }
-        words.add(text.substring(startingIndex, text.length())); // add the last word in sentence
-        return words;
-    }
-
-    /**
-     * Calculate the user's accuracy based on the correctness of the words they typed.
-     *
-     * @param sentencesCleared: the number of sentences the user cleared during the test
-     * @param original_text: the original text exactly how it was written
-     * @param answers: the list of words that the user typed
-     * @return The accuracy of the user's typing. Assume for the time being we
-     * consider accuracy = (# correct / total # of words written) * 100
-     */
-
-    public static double calculate_accuracy
-    (int sentencesCleared, String[] original_text, List<String> answers){
-        List<String> expectedWords;
-        List<String> actualWords;
-        int total = 0;
-        int mistakes = 0;
-        for(int i = 0; i < sentencesCleared; i++){
-            expectedWords = prepare_text(original_text[i % original_text.length]);
-            total += expectedWords.size();
-            actualWords = prepare_text(answers.get(i));
-            int j = 0;
-            while(j < expectedWords.size() && j < actualWords.size()){
-                if(!expectedWords.get(j).equals(actualWords.get(j)))
-                    mistakes++;
-                j++;
-            }
-            // This line *should* have the effect of adding a mistake for every single
-            // missing word or extraneous word, and doing nothing if the number of words match
-            mistakes += Math.max(expectedWords.size(), actualWords.size()) - j;
-        }
-        // this case may happen if the user inputs too many words or too little words
-        if (mistakes > total)
-            return 0;
-        else{
-            return Math.round(100 * ((total - mistakes) / (double) total));
-        }
-    }
-
-    /**
-     * Calculate the user's WPM, or words per minute.
-     *
-     * @param time: the time spent in the typing text
-     * @param number_of_chars: number of characters of each input
-     * @return The user's WPM. Let WPM = the number of words typed / time spent typing
-     */
-
-    public static long calculate_wpm(double time, int number_of_chars) {
-        double cpm = number_of_chars / (time / 60);
-        return  Math.round(cpm / 5);
-    }
-
-
     private void signOut() {
         ParseUser.logOutInBackground(e -> {
             Toast.makeText(this, "Logged Out", Toast.LENGTH_SHORT).show();
             Intent i = new Intent(getApplicationContext(),LoginActivity.class);
             startActivity(i);
         });
+    }
+    private void goResultScreen() {
+        Intent i = new Intent(this, ResultActivity.class);
+        startActivity(i);
+        finish();
+        startActivity(new Intent(this, ResultActivity.class));
     }
 }
