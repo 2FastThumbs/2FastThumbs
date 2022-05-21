@@ -73,13 +73,13 @@
         android:layout_height="48dp"
         android:layout_marginStart="130dp"
         android:layout_marginEnd="131dp"
-        android:layout_marginBottom="8dp"
-        android:scaleX="1.25"
-        android:scaleY="1.25"
+        android:layout_marginBottom="34dp"
+        android:scaleX="1.5"
+        android:scaleY="1.5"
         android:text="@string/start"
         app:layout_constraintBottom_toTopOf="@+id/btn_sign_out"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.517"
+        app:layout_constraintHorizontal_bias="0.545"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
@@ -105,6 +105,19 @@
         android:layout_marginTop="148dp"
         android:layout_marginEnd="64dp"
         android:text="@string/please_type_the_prompt_given"
+        android:textColor="@color/red"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/warning2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="64dp"
+        android:layout_marginTop="167dp"
+        android:layout_marginEnd="64dp"
+        android:text="@string/please_choose_a_text_prompt"
         android:textColor="@color/red"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -145,5 +158,38 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/timeSetting" />
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="100dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="100dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/input">
+
+        <RadioButton
+            android:id="@+id/exampleButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="onRadioButtonClicked"
+            android:text="Example text" />
+
+        <RadioButton
+            android:id="@+id/wordButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="onRadioButtonClicked"
+            android:text="Words" />
+
+        <RadioButton
+            android:id="@+id/codeButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="onRadioButtonClicked"
+            android:text="Code" />
+
+    </RadioGroup>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
