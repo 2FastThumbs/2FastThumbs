@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">2 Fast Thumbs</string>
     <string name="enter_the_following_text">Select your testing time using the slider below.</string>
-    <string name="text_to_be_typed_goes_here">Please select your writing prompt first.</string>
+    <string name="text_to_be_typed_goes_here">Select your writing prompt below.</string>
     <string name="send">Send</string>
     <string name="wpm">WPM:</string>
     <string name="accuracy">Accuracy:</string>

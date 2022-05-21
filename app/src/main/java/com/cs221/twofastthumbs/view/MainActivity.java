@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
                     { "for(int i = 0; i < 5; i++)",
                     "return i + (x % 6);",
                     "if(getValue(x / 15) == 4)",
-                    "System.out.println(%s, example.toString());",
+                    "System.out.println(String.format(%f, 3.14159));",
                     "list.stream().map(x -> x + 2).collect(Collectors.toList());" };
 
     public static String[] text;
