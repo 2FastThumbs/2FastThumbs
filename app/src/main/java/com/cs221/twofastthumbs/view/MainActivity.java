@@ -95,6 +95,8 @@ public class MainActivity extends AppCompatActivity {
         warning.setVisibility(View.INVISIBLE);      // hide warnings at startup
         warning2.setVisibility(View.GONE);
 
+        text = null;
+
         btnSignOut.setOnClickListener(v -> {
             signOut();
         });

@@ -55,6 +55,7 @@ public class TypeRacer {
      */
 
     public static double calculate_accuracy (int totalCharacters, double mistakes) {
+        if(mistakes > totalCharacters) return 0;
         return Math.round(100 * (totalCharacters - mistakes) / totalCharacters);
     }
 

@@ -2,6 +2,7 @@ package com.cs221.twofastthumbs.view;
 
 import static com.cs221.twofastthumbs.view.TypeTestActivity.acc;
 import static com.cs221.twofastthumbs.view.TypeTestActivity.wordsPerMinute;
+import static com.cs221.twofastthumbs.view.TypeTestActivity.totalChars;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,14 +20,14 @@ import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class ResultActivity extends AppCompatActivity {
+
     TextView time;
     TextView instructions;
     Button btnStartOver;
     TextView WPM;
     TextView accuracy;
+    TextView characters;
     Button btnSignOut;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +39,7 @@ public class ResultActivity extends AppCompatActivity {
         btnStartOver = findViewById(R.id.start);
         WPM = findViewById(R.id.WPM);
         accuracy = findViewById(R.id.accuracy);
+        characters = findViewById(R.id.characters);
         btnSignOut = findViewById(R.id.btn_sign_out);
 
         btnSignOut.setOnClickListener(v -> {
@@ -49,6 +51,8 @@ public class ResultActivity extends AppCompatActivity {
 
         WPM.setText("WPM: " + wordsPerMinute);
         accuracy.setText("Accuracy: " + acc + "%");
+        characters.setText("Total characters: " + totalChars);
+
 
     }
 

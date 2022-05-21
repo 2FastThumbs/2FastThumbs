@@ -34,10 +34,10 @@ public class TypeTestActivity extends AppCompatActivity {
     EditText input;             // the text box that the user will write into
     TextView WPM;               // WPM counter
     TextView accuracy;          // accuracy counter
+    TextView characters;        // total character counter
 
     List<String> answers;   // list of user's inputs
     List<String> split_answers; // list of user's inputs split into individual words
-    List<Character> split_chars; // List of user's input split by character
     // index is used for traversal of text lines and keeping track of position in list,
     int index;
 
@@ -48,6 +48,7 @@ public class TypeTestActivity extends AppCompatActivity {
 
     public static long wordsPerMinute;
     public static double acc;
+    public static int totalChars;
 
     CountDownTimer timer;
     Boolean timer_isRunning = false;
@@ -63,11 +64,12 @@ public class TypeTestActivity extends AppCompatActivity {
         input = findViewById(R.id.input);
         WPM = findViewById(R.id.WPM);
         accuracy = findViewById(R.id.accuracy);
+        characters = findViewById(R.id.characters);
 
         answers = new ArrayList<>();             // reset lists
         split_answers = new ArrayList<>();
-        split_chars = new ArrayList<>();
         index = 0;
+        totalChars = 0;
         mistakes = 0;
 
         prompt.setTypeface(null, Typeface.BOLD);    // make prompt bold
@@ -75,6 +77,8 @@ public class TypeTestActivity extends AppCompatActivity {
         WPM.setText(R.string.wpm);                     // reset WPM
         accuracy.setText(R.string.accuracy);           // reset accuracy
         timeStart = System.currentTimeMillis();        // time in ms test was started
+
+        warning.setVisibility(View.INVISIBLE);
 
         timer = new CountDownTimer(minutes * 60 * 1000, 1000) {
             @Override
@@ -119,11 +123,18 @@ public class TypeTestActivity extends AppCompatActivity {
                     warning.setVisibility(View.GONE);
                     hasMistakes = false;
                 }
+                timeLapsed = (System.currentTimeMillis() - timeStart) / 1000;
+                wordsPerMinute = TypeRacer.calculate_wpm
+                        (timeLapsed, totalChars + charSequence.length());
+                acc = TypeRacer.calculate_accuracy
+                        (totalChars + charSequence.length(), mistakes);
+                WPM.setText("WPM: " + wordsPerMinute);
+                accuracy.setText("Accuracy: " + acc + "%");
+                characters.setText("Total characters: " + (totalChars + charSequence.length()));
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
-
             }
         });
 
@@ -136,18 +147,19 @@ public class TypeTestActivity extends AppCompatActivity {
                         input.getText().length() > 0 && !hasMistakes) {
 
                     answers.add(index, input.getText().toString());
+                    totalChars += input.getText().length();
                     split_answers.addAll(TypeRacer.prepare_text(input.getText().toString()));
-                    split_chars.addAll(TypeRacer.break_text(input.getText().toString()));
                     index++;
                     input.getText().clear();    // clear the input box
                     prompt.setText(text[index % text.length]); // set new prompt
                     warning.setVisibility(View.GONE);
                     timeLapsed = (System.currentTimeMillis() - timeStart) / 1000;
 
-                    wordsPerMinute = TypeRacer.calculate_wpm(timeLapsed, split_chars.size());
-                    acc = TypeRacer.calculate_accuracy(split_chars.size(), mistakes);
+                    wordsPerMinute = TypeRacer.calculate_wpm(timeLapsed, totalChars);
+                    acc = TypeRacer.calculate_accuracy(totalChars, mistakes);
                     WPM.setText("WPM: " + wordsPerMinute);
                     accuracy.setText("Accuracy: " + acc + "%");
+                    characters.setText("Total characters: " + totalChars);
                     return true;
                 }
                 if(input.getText().length() != text[index % text.length].length()) {

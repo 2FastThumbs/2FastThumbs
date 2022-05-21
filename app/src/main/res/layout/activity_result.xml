@@ -39,8 +39,10 @@
         android:layout_width="150dp"
         android:layout_height="48dp"
         android:layout_marginStart="130dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="216dp"
         android:layout_marginEnd="131dp"
+        android:scaleX="1.5"
+        android:scaleY="1.5"
         android:text="@string/start_over"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -51,22 +53,42 @@
         android:id="@+id/WPM"
         android:layout_width="151dp"
         android:layout_height="21dp"
+        android:layout_marginTop="44dp"
+        android:scaleX="1.25"
+        android:scaleY="1.25"
         android:text="@string/wpm"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/start" />
+        app:layout_constraintTop_toBottomOf="@+id/instructions" />
 
     <TextView
         android:id="@+id/accuracy"
         android:layout_width="151dp"
         android:layout_height="20dp"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="12dp"
+        android:scaleX="1.25"
+        android:scaleY="1.25"
         android:text="@string/accuracy"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/WPM" />
+
+    <TextView
+        android:id="@+id/characters"
+        android:layout_width="151dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="12dp"
+        android:scaleX="1.25"
+        android:scaleY="1.25"
+        android:text="@string/total_characters"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/accuracy" />
 
     <Button
         android:id="@+id/btn_sign_out"
