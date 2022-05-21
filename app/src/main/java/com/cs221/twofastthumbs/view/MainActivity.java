@@ -15,6 +15,7 @@ import android.view.inputmethod.EditorInfo;
 import android.text.TextWatcher;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
     TextView WPM;               // WPM counter
     TextView accuracy;          // accuracy counter
     Button btnSignOut;          // sign out button
+    SeekBar timeSetting;
+    TextView timeView;
+
     public static String[] text = { "This is an example sentence.",
                                     "Let's hope that this code works properly.",
                                     "If not, I don't know what I'll do!",
@@ -49,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     List<Character> split_chars; // List of user's input split by character
     // index is used for traversal of text lines and keeping track of position in list,
     int index;
-    long minutes = 1;   // time is hardcoded at the moment, sorry
+    long minutes;
     long timeStart = 0;  // Time code was started in milliseconds
     long timeLapsed = 0;  // Time between each submit
     public static long wordsPerMinute;
@@ -75,6 +79,8 @@ public class MainActivity extends AppCompatActivity {
         btnSignOut = (Button) findViewById(R.id.btn_sign_out);
         WPM = (TextView) findViewById(R.id.WPM);
         accuracy = (TextView) findViewById(R.id.accuracy);
+        timeSetting = (SeekBar) findViewById(R.id.timeSetting);
+        timeView = (TextView) findViewById(R.id.timeView);
 
         input.setVisibility(View.GONE);             // hide input box at startup
         warning.setVisibility(View.GONE);           // hide warning at startup
@@ -86,41 +92,68 @@ public class MainActivity extends AppCompatActivity {
             signOut();
         });
 
-        timer = new CountDownTimer(minutes * 60 * 1000, 1000) {
+        timeSetting.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onTick(long l) {
-                timer_isRunning = true;
-                time.setText("Time left: " + l / (1000*60) % 60 + ":" + l / 1000 % 60);
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                minutes = i / 11 + 1;
+                timeView.setText("Time: " + minutes + " minutes"); // update time view
             }
 
             @Override
-            public void onFinish() {
-                timer_isRunning = false;                       // stop timer
-                goResultScreen();                              // result screen
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                warning.setVisibility(View.GONE);
             }
-        };
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                minutes = seekBar.getProgress() / 11 + 1;
+                timeView.setText("Time: " + minutes + " minutes");
+                timer = new CountDownTimer(minutes * 60 * 1000, 1000) {
+                    @Override
+                    public void onTick(long l) {
+                        timer_isRunning = true;
+                        time.setText("Time left: " + l / (1000*60) % 60 + ":" + l / 1000 % 60);
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        timer_isRunning = false;                       // stop timer
+                        goResultScreen();                              // result screen
+                    }
+                };
+            }
+        });
+
 
         start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                timer.start();                                 // start timer
-                start.setVisibility(View.INVISIBLE);           // hide start button
-                instructions.setVisibility(View.GONE);         // hide instructions
-                btnSignOut.setVisibility(View.INVISIBLE);      // hide sign out button
-                input.setVisibility(View.VISIBLE);             // show input box
-                WPM.setVisibility(View.VISIBLE);               // show WPM
-                accuracy.setVisibility(View.VISIBLE);          // show accuracy
-                answers = new ArrayList<String>();             // reset lists
-                split_answers = new ArrayList<String>();
-                split_chars = new ArrayList<>();
-                index = 0;
-                mistakes = 0;
-                prompt.setVisibility(View.VISIBLE);            // make prompt visible
-                prompt.setTypeface(null, Typeface.BOLD);    // make prompt bold
-                prompt.setText(text[index]);                   // show current prompt
-                WPM.setText(R.string.wpm);                     // reset WPM
-                accuracy.setText(R.string.accuracy);           // reset accuracy
-                timeStart = System.currentTimeMillis();        // time in ms test was started
+                if(timer == null){
+                    warning.setVisibility(View.VISIBLE);
+                    warning.setText(R.string.setTime);
+                }
+                else {
+                    timer.start();                                 // start timer
+                    start.setVisibility(View.INVISIBLE);           // hide start button
+                    instructions.setVisibility(View.GONE);         // hide instructions
+                    timeSetting.setVisibility(View.GONE);          // hide time seekbar
+                    timeView.setVisibility(View.GONE);             // hide time setting view
+                    btnSignOut.setVisibility(View.INVISIBLE);      // hide sign out button
+                    input.setVisibility(View.VISIBLE);             // show input box
+                    WPM.setVisibility(View.VISIBLE);               // show WPM
+                    accuracy.setVisibility(View.VISIBLE);          // show accuracy
+                    answers = new ArrayList<String>();             // reset lists
+                    split_answers = new ArrayList<String>();
+                    split_chars = new ArrayList<>();
+                    index = 0;
+                    mistakes = 0;
+                    prompt.setVisibility(View.VISIBLE);            // make prompt visible
+                    prompt.setTypeface(null, Typeface.BOLD);    // make prompt bold
+                    prompt.setText(text[index]);                   // show current prompt
+                    WPM.setText(R.string.wpm);                     // reset WPM
+                    accuracy.setText(R.string.accuracy);           // reset accuracy
+                    timeStart = System.currentTimeMillis();        // time in ms test was started
+                }
             }
         });
 
@@ -143,8 +176,8 @@ public class MainActivity extends AppCompatActivity {
                     warning.setVisibility(View.VISIBLE);
                     warning.setText("Expected input:\n" + expected);
                     if(!hasMistakes){
-                        hasMistakes = true;
-                        mistakes++;
+                        hasMistakes = true; // only increase number of mistakes if it is new
+                        mistakes++;         // i.e. not adding onto the current mistake
                     }
                 }
                 else{
