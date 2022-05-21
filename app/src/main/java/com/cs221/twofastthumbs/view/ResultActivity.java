@@ -1,7 +1,7 @@
 package com.cs221.twofastthumbs.view;
 
-import static com.cs221.twofastthumbs.view.MainActivity.acc;
-import static com.cs221.twofastthumbs.view.MainActivity.wordsPerMinute;
+import static com.cs221.twofastthumbs.view.TypeTestActivity.acc;
+import static com.cs221.twofastthumbs.view.TypeTestActivity.wordsPerMinute;
 
 import androidx.appcompat.app.AppCompatActivity;
 

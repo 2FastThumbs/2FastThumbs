@@ -14,6 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.2FastThumbs">
         <activity
+            android:name=".view.TypeTestActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.ResultActivity"
             android:exported="false" />
         <activity
@@ -26,6 +29,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".view.MainActivity" />
+
         <meta-data
             android:name="com.parse.SERVER_URL"
             android:value="@string/back4app_server_url" />
