@@ -4,21 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TypeRacer {
-    /**
-     * Split the text into individual character to check right away if the user misspelled
-     * something or entered something unexpected. Used to calculate WPM and accuracy.
-     *
-     * @param text : text that the user will type.
-     * @return A char array that contains every character of the text in order.
-     */
-
-    public static List<Character> break_text(String text){
-        List<Character> charList = new ArrayList<>();
-        for (char ch : text.toCharArray()) {
-            charList.add(ch);
-        }
-        return charList;
-    }
 
     /**
      * Split sentences into words so that we can easily compare expected word with the
