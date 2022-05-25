@@ -6,11 +6,12 @@ import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
-@ParseClassName("Scores")
+@ParseClassName("Score")
 public class Score extends ParseObject {
 
     public static final String KEY_SCORE= "score";
     public static final String KEY_USER = "user";
+    public static final String KEY_CREATED_KEY = "createdAt";
 
     public String getScore() {
         return getString(KEY_SCORE);

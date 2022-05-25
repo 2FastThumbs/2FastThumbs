@@ -28,6 +28,7 @@ public class ResultActivity extends AppCompatActivity {
     TextView accuracy;
     TextView characters;
     Button btnSignOut;
+    Button btnLeaderboard;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +42,7 @@ public class ResultActivity extends AppCompatActivity {
         accuracy = findViewById(R.id.accuracy);
         characters = findViewById(R.id.characters);
         btnSignOut = findViewById(R.id.btn_sign_out);
+        btnLeaderboard = findViewById(R.id.btnLeaderboard);
 
         btnSignOut.setOnClickListener(v -> {
             signOut();
@@ -48,12 +50,21 @@ public class ResultActivity extends AppCompatActivity {
         btnStartOver.setOnClickListener(v -> {
             goMainActivity();
         });
+        btnLeaderboard.setOnClickListener(v -> {
+            goLeaderboardActivity();
+        });
 
         WPM.setText("WPM: " + wordsPerMinute);
         accuracy.setText("Accuracy: " + acc + "%");
         characters.setText("Total characters: " + totalChars);
 
 
+    }
+
+    private void goLeaderboardActivity() {
+        Intent i = new Intent(this, LeaderboardActivity.class);
+        startActivity(i);
+        finish();
     }
 
     private void signOut() {

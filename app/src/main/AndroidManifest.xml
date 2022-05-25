@@ -14,6 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.2FastThumbs">
         <activity
+            android:name=".view.LeaderboardActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.TypeTestActivity"
             android:exported="false" />
         <activity

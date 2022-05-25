@@ -60,7 +60,7 @@ public class ScoresAdapter extends RecyclerView.Adapter<ScoresAdapter.ViewHolder
         public void bind(Score score) {
             // Bind the post data to the view elements
             tvUsername.setText(score.getUser().getUsername());
-            tvScore.setText(score.getScore());
+            tvScore.setText(score.getScore() + "points");
             }
         }
     }
